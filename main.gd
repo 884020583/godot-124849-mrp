@@ -11,12 +11,16 @@ extends Node
 # On Android release builds that read can land on an unmapped page and the process dies
 # with SIGSEGV/SEGV_ACCERR after a few seconds. On desktop the read normally lands in
 # mapped heap memory, so the app keeps running; build with ASAN to catch it there.
+#
+# The PCM buffer is grown with append() one frame at a time, which is what a game
+# generating its music from code (like the one in the original report) does; the
+# allocation layout then makes the two bytes past the end land in an unmapped page.
 
 const RATE := 22050
 const SECONDS := 8.0
 const AMPLITUDE := 0.25
 
-var _player: AudioStreamPlayer
+var _players: Array[AudioStreamPlayer] = []
 var _start_msec := 0
 var _next_report_sec := 5.0
 
@@ -27,23 +31,32 @@ func _ready() -> void:
 	print("MRP: frames=%d loop_begin=%d loop_end=%d format=%d stereo=%s mix_rate=%d" % [
 		frames, stream.loop_begin, stream.loop_end, stream.format,
 		str(stream.stereo), stream.mix_rate])
+	print("MRP: data size=%d bytes" % stream.data.size())
 
-	_player = AudioStreamPlayer.new()
-	_player.stream = stream
-	add_child(_player)
-	_player.play()
+	# One player is enough to hit the bug, but a few independent streams with different
+	# lengths make the crash depend less on allocator luck.
+	for frame_count in [frames, frames + 1, frames + 3, frames + 7]:
+		var player := AudioStreamPlayer.new()
+		player.stream = (stream if frame_count == frames else _build_stream(frame_count))
+		add_child(player)
+		player.play()
+		_players.append(player)
 	_start_msec = Time.get_ticks_msec()
-	print("MRP: playing a %.1f s forward loop; a crash after a few seconds means "
+	print("MRP: playing %.1f s forward loop(s); a crash after a few seconds means "
 		% SECONDS + "the engine read frame index `loop_end`, past the end of the sample data.")
 
 
-func _build_stream() -> AudioStreamWAV:
-	var frames := int(SECONDS * RATE)
+func _build_stream(p_frames: int = -1) -> AudioStreamWAV:
+	var frames := int(SECONDS * RATE) if p_frames < 0 else p_frames
 	var bytes := PackedByteArray()
-	bytes.resize(frames * 2)
+	bytes.resize(2)
 	for i in frames:
 		var sample := roundi(sin(TAU * 440.0 * float(i) / float(RATE)) * AMPLITUDE * 32767.0)
-		bytes.encode_s16(i * 2, clampi(sample, -32768, 32767))
+		var frame := PackedByteArray()
+		frame.resize(2)
+		frame.encode_s16(0, clampi(sample, -32768, 32767))
+		bytes.append(frame[0])
+		bytes.append(frame[1])
 
 	var stream := AudioStreamWAV.new()
 	stream.format = AudioStreamWAV.FORMAT_16_BITS

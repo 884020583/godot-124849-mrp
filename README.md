@@ -11,11 +11,24 @@ built from code), that is an out-of-bounds read of two bytes past the PCM data.
 
 ## What this project does
 
-`main.gd` builds an `AudioStreamWAV` at runtime:
+`main.gd` builds `AudioStreamWAV` instances at runtime:
 
-- mono, 16-bit PCM, 22050 Hz, 8 seconds = 176400 frames;
-- `loop_mode = LOOP_FORWARD`, `loop_begin = 0`, `loop_end = 176400` (the frame count);
-- plays it with an `AudioStreamPlayer` and prints a heartbeat every five seconds.
+- mono, 16-bit PCM, 22050 Hz, 8 seconds = 176400 frames (plus three players with one,
+  three and seven extra frames, so the crash does not depend on one exact allocation size);
+- `loop_mode = LOOP_FORWARD`, `loop_begin = 0`, `loop_end = frame count`;
+- the PCM buffer is grown with `append()` one frame at a time, like code-generated music;
+- plays them with `AudioStreamPlayer`s and prints a heartbeat every five seconds.
+
+On the device where this bug was first reported the app died with `SIGSEGV` /
+`SEGV_ACCERR` a few seconds after the music started looping, with the `loop_end` frame
+index in `rsi` and the fault address two bytes past the end of the PCM buffer (tombstone
+and symbolized stack are in godotengine/godot#124849).
+
+Whether the two-byte overrun turns into a hard fault depends on where the allocator put
+the PCM buffer: it faults only when the mapping ends right after it, otherwise the read
+lands in adjacent (mapped) heap memory and playback just keeps going. If the prebuilt APK
+does not crash on your device, run a build with AddressSanitizer (or the MRP test in
+`tests/scene/test_audio_stream_wav.cpp`) to see the out-of-bounds access deterministically.
 
 Every loop iteration reads frame 176400, i.e. 2 bytes past the end of the sample data.
 
