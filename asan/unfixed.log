@@ -1,0 +1,69 @@
+=================================================================
+[1m[31m==20879==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x51d000246660 at pc 0x55fb8a0805c3 bp 0x7ffdbef88f20 sp 0x7ffdbef88f10
+[1m[0m[1m[34mREAD of size 2 at 0x51d000246660 thread T0[1m[0m
+    #0 0x55fb8a0805c2 in void AudioStreamPlaybackWAV::decode_samples<short, false, false, false>(short const*, AudioFrame*, long&, signed char&, unsigned int, AudioStreamPlaybackWAV::IMA_ADPCM_State*, AudioStreamPlaybackWAV::QOA_State*) scene/resources/audio/audio_stream_wav.cpp:195
+    #1 0x55fb8a07096d in AudioStreamPlaybackWAV::_mix_internal(AudioFrame*, int) scene/resources/audio/audio_stream_wav.cpp:368
+    #2 0x55fb8a00d917 in AudioStreamPlaybackResampled::mix(AudioFrame*, float, int) scene/resources/audio/audio_stream.cpp:229
+    #3 0x55fb7e5a0759 in DOCTEST_ANON_FUNC_22 tests/scene/test_audio_stream_wav.cpp:261
+    #4 0x55fb7c869fbe in doctest::Context::run() thirdparty/doctest/doctest.h:7039
+    #5 0x55fb7c6d78f8 in test_main(int, char**) tests/test_main.cpp:152
+    #6 0x55fb7c53e391 in Main::test_entrypoint(int, char**, bool&) main/main.cpp:944
+    #7 0x55fb7c2f7b02 in main platform/linuxbsd/godot_linuxbsd.cpp:105
+    #8 0x7f2e8782a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #9 0x7f2e8782a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #10 0x55fb7c2a88d4 in _start (/home/runner/work/godot/godot/bin/godot.linuxbsd.editor.dev.x86_64.san+0x27138d4) (BuildId: d61ec0b6e05620dc44f8b394669ac349151d0884)
+
+[1m[32m0x51d000246660 is located 0 bytes after 2016-byte region [0x51d000245e80,0x51d000246660)
+[1m[0m[1m[35mallocated by thread T0 here:[1m[0m
+    #0 0x7f2e87cfd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0x55fb8c349bf6 in void* Memory::alloc_static<false>(unsigned long, bool) core/os/memory.cpp:101
+    #2 0x55fb8c348ce7 in Memory::realloc_static(void*, unsigned long, bool) core/os/memory.cpp:128
+    #3 0x55fb8a087566 in LocalVector<unsigned char, unsigned long, false, true>::reserve(unsigned long) core/templates/local_vector.h:214
+    #4 0x55fb8a086d40 in void LocalVector<unsigned char, unsigned long, false, true>::_resize<false>(unsigned long) core/templates/local_vector.h:71
+    #5 0x55fb8a085c81 in LocalVector<unsigned char, unsigned long, false, true>::resize(unsigned long) core/templates/local_vector.h:226
+    #6 0x55fb8a082834 in LocalVector<unsigned char, unsigned long, false, true>::operator=(Span<unsigned char>) core/templates/local_vector.h:397
+    #7 0x55fb8a071a73 in AudioStreamWAV::set_data(Vector<unsigned char> const&) scene/resources/audio/audio_stream_wav.cpp:523
+    #8 0x55fb7e5a016f in DOCTEST_ANON_FUNC_22 tests/scene/test_audio_stream_wav.cpp:246
+    #9 0x55fb7c869fbe in doctest::Context::run() thirdparty/doctest/doctest.h:7039
+    #10 0x55fb7c6d78f8 in test_main(int, char**) tests/test_main.cpp:152
+    #11 0x55fb7c53e391 in Main::test_entrypoint(int, char**, bool&) main/main.cpp:944
+    #12 0x55fb7c2f7b02 in main platform/linuxbsd/godot_linuxbsd.cpp:105
+    #13 0x7f2e8782a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #14 0x7f2e8782a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #15 0x55fb7c2a88d4 in _start (/home/runner/work/godot/godot/bin/godot.linuxbsd.editor.dev.x86_64.san+0x27138d4) (BuildId: d61ec0b6e05620dc44f8b394669ac349151d0884)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow scene/resources/audio/audio_stream_wav.cpp:195 in void AudioStreamPlaybackWAV::decode_samples<short, false, false, false>(short const*, AudioFrame*, long&, signed char&, unsigned int, AudioStreamPlaybackWAV::IMA_ADPCM_State*, AudioStreamPlaybackWAV::QOA_State*)
+Shadow bytes around the buggy address:
+  0x51d000246380: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m
+  0x51d000246400: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m
+  0x51d000246480: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m
+  0x51d000246500: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m
+  0x51d000246580: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m
+=>0x51d000246600: [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m [1m[0m00[1m[0m[[1m[31mfa[1m[0m][1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+  0x51d000246680: [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+  0x51d000246700: [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+  0x51d000246780: [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+  0x51d000246800: [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+  0x51d000246880: [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           [1m[0m00[1m[0m
+  Partially addressable: [1m[0m01[1m[0m [1m[0m02[1m[0m [1m[0m03[1m[0m [1m[0m04[1m[0m [1m[0m05[1m[0m [1m[0m06[1m[0m [1m[0m07[1m[0m 
+  Heap left redzone:       [1m[31mfa[1m[0m
+  Freed heap region:       [1m[35mfd[1m[0m
+  Stack left redzone:      [1m[31mf1[1m[0m
+  Stack mid redzone:       [1m[31mf2[1m[0m
+  Stack right redzone:     [1m[31mf3[1m[0m
+  Stack after return:      [1m[35mf5[1m[0m
+  Stack use after scope:   [1m[35mf8[1m[0m
+  Global redzone:          [1m[31mf9[1m[0m
+  Global init order:       [1m[36mf6[1m[0m
+  Poisoned by user:        [1m[34mf7[1m[0m
+  Container overflow:      [1m[34mfc[1m[0m
+  Array cookie:            [1m[31mac[1m[0m
+  Intra object redzone:    [1m[33mbb[1m[0m
+  ASan internal:           [1m[33mfe[1m[0m
+  Left alloca redzone:     [1m[34mca[1m[0m
+  Right alloca redzone:    [1m[34mcb[1m[0m
+==20879==ABORTING
+exit=1
+asan_reports=2
